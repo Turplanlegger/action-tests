@@ -1,0 +1,34 @@
+name: New Release
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - __about__.py
+
+jobs:
+  create-release:
+    name: Publish new GitHub Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get version
+        id: get-version
+        run: echo "NEW_VERSION=$(grep -v '^#' __about__.py | cut -d'=' -f2 | xargs)" >> "$GITHUB_OUTPUT"
+
+      - name: Create new tag and release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NEW_VERSION: ${{ steps.get-version.outputs.NEW_VERSION }}
+        run: |
+          gh release create "$NEW_VERSION" \
+            --target "main" \
+            --latest \
+            --title "$NEW_VERSION" \
+            --generate-notes
