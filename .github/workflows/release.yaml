@@ -18,13 +18,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install Python packeages
+        run: pip install PyJWT
+
+      - name: Authenticate with GitHub App
+        id: auth
+        env:
+          APP_ID: ${{ secrets.APP_ID }}
+          PRIVATE_KEY: ${{ secrets.TEST_APP_PRIVATE_KEY }}
+          INSTALLATION_ID: ${{ secrets.INSTALLATION_ID }}
+        run: python3 .github/workflows/jwt-script.py
+
       - name: Get version
         id: get-version
         run: echo "NEW_VERSION=$(grep -v '^#' __about__.py | cut -d'=' -f2 | xargs)" >> "$GITHUB_OUTPUT"
 
       - name: Create new tag and release
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ steps.auth.outputs.jwt  }}
           NEW_VERSION: ${{ steps.get-version.outputs.NEW_VERSION }}
         run: |
           gh release create "$NEW_VERSION" \
