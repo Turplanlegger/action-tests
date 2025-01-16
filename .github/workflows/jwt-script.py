@@ -8,9 +8,9 @@ if private_key is None:
     print('pem is not set')
     exit(1)
 
-client_id = os.environ.get('CLIENT_ID')
-if client_id is None:
-    print('client_id is not set')
+app_id = os.environ.get('APP_ID')
+if app_id is None:
+    print('app_id is not set')
     exit(1)
 
 payload = {
@@ -20,7 +20,7 @@ payload = {
     'exp': int(time.time()) + 600,
     
     # GitHub App's client ID
-    'iss': client_id
+    'iss': app_id
 }
 
 # Create JWT
