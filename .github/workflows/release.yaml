@@ -31,7 +31,7 @@ jobs:
         env:
           APP_ID: ${{ secrets.APP_ID }}
           PRIVATE_KEY: ${{ secrets.TEST_APP_PRIVATE_KEY }}
-        run: python3 .github/workflows/jwt-script.py
+        run: python3 .github/workflows/jwt-script.py >> "$GITHUB_OUTPUT"
 
       - name: Get version
         id: get-version
