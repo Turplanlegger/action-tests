@@ -56,5 +56,5 @@ except requests.JSONDecodeError as e:
     print(e)
     exit(1)
 
-print(token)
+print(f'TOKEN={token}')
 
