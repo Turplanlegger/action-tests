@@ -39,7 +39,7 @@ jobs:
 
       - name: Create new tag and release
         env:
-          GH_TOKEN: ${{ steps.auth.outputs.jwt  }}
+          GH_TOKEN: ${{ steps.auth.outputs.JWT  }}
           NEW_VERSION: ${{ steps.get-version.outputs.NEW_VERSION }}
         run: |
           gh release create "$NEW_VERSION" \
