@@ -5,12 +5,12 @@ import jwt
 
 private_key = os.environ.get('PRIVATE_KEY')
 if private_key is None:
-    print('pem is not set')
+    print('PRIVATE_KEY is not set')
     exit(1)
 
 app_id = os.environ.get('APP_ID')
 if app_id is None:
-    print('app_id is not set')
+    print('APP_ID is not set')
     exit(1)
 
 payload = {
