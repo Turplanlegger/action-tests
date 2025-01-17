@@ -24,7 +24,7 @@ jobs:
           python-version: "3.13"
 
       - name: Install Python packeages
-        run: pip install PyJWT
+        run: pip install PyJWT cryptography
 
       - name: Authenticate with GitHub App
         id: auth
