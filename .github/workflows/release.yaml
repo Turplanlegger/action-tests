@@ -31,7 +31,6 @@ jobs:
         env:
           APP_ID: ${{ secrets.APP_ID }}
           PRIVATE_KEY: ${{ secrets.TEST_APP_PRIVATE_KEY }}
-          INSTALLATION_ID: ${{ secrets.INSTALLATION_ID }}
         run: python3 .github/workflows/jwt-script.py
 
       - name: Get version
