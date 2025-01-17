@@ -24,14 +24,14 @@ jobs:
           python-version: "3.13"
 
       - name: Install Python packeages
-        run: pip install PyJWT cryptography
+        run: pip install PyJWT cryptography requests
 
       - name: Authenticate with GitHub App
         id: auth
         env:
           APP_ID: ${{ secrets.APP_ID }}
           PRIVATE_KEY: ${{ secrets.TEST_APP_PRIVATE_KEY }}
-        run: python3 .github/workflows/jwt-script.py >> "$GITHUB_OUTPUT"
+        run: python3 .github/workflows/authentication-script.py >> "$GITHUB_OUTPUT"
 
       - name: Get version
         id: get-version
