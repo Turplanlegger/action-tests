@@ -1,92 +1,27 @@
-name: New Release
+name: Test deploy to K3s
 
 on:
   workflow_dispatch:
   push:
     branches:
-      - main
+      - k3s-deploy
     paths:
       - __about__.py
 
 jobs:
-  create-release:
-    name: Publish new GitHub Release
+  deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Set up Python 3.13
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
-
-      - name: Install Python packeages
-        run: pip install PyJWT cryptography requests
-
-      - name: Authenticate with GitHub App
-        id: auth
-        env:
-          APP_ID: ${{ secrets.APP_ID }}
-          PRIVATE_KEY: ${{ secrets.TEST_APP_PRIVATE_KEY }}
-          INSTALLATION_ID: ${{ secrets.INSTALLATION_ID }}
-        run: python3 .github/workflows/authentication-script.py >> "$GITHUB_OUTPUT"
-
-      - name: Get version
-        id: get-version
-        run: echo "NEW_VERSION=$(grep -v '^#' __about__.py | cut -d'=' -f2 | xargs)" >> "$GITHUB_OUTPUT"
-
-      - name: Create new tag and release
-        env:
-          GH_TOKEN: ${{ steps.auth.outputs.TOKEN  }}
-          NEW_VERSION: ${{ steps.get-version.outputs.NEW_VERSION }}
+      - name: Set up K3s kubeconfig
         run: |
-          gh release create "$NEW_VERSION" \
-            --target "main" \
-            --latest \
-            --title "$NEW_VERSION" \
-            --generate-notes
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG }}" | base64 --decode > ~/.kube/config
+          chmod 600 ~/.kube/config
 
-  build-and-push-docker-image:
-    name: Build and publish Docker image to GitHub Packages
-    runs-on: ubuntu-latest
-    needs: create-release
-    permissions:
-      packages: write
-    env:
-      REGISTRY: ghcr.io
-    steps:
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          context: git
-          images: ${{ env.REGISTRY }}/${{ github.repository }}
-          tags: |
-            type=raw,value=latest
-            type=pep440,pattern={{version}}
-            type=sha,format=long
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          
+      - name: Update Kubernetes Deployment
+        run: |
+          kubectl -n tp auth can-i patch deployments
+          kubectl -n tp auth can-i list pods
