@@ -28,5 +28,5 @@ jobs:
 
       - name: Update Kubernetes Deployment
         run: |
-          kubectl -n tp set image deployment/api-turplanlegger-api turplanlegger-api=ghcr.io/turplanlegger/turplanlegger-api:latest
+          kubectl -n tp set image deployment/api-turplanlegger-api turplanlegger-api=ghcr.io/turplanlegger/turplanlegger-api:sha-cd3ec201f515a2fe4e29817b5f7311b6e0deae6e
           kubectl -n tp rollout status deployment/api-turplanlegger-api
