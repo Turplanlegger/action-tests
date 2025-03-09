@@ -25,3 +25,8 @@ jobs:
         run: |
           kubectl -n tp auth can-i patch deployments
           kubectl -n tp auth can-i list pods
+
+      - name: Update Kubernetes Deployment
+        run: |
+          kubectl -n tp set image deployment/api-turplanlegger-api turplanlegger-api=ghcr.io/turplanlegger/turplanlegger-api:sha-cd3ec201f515a2fe4e29817b5f7311b6e0deae6e
+          kubectl rollout status deployment/api-turplanlegger-api
